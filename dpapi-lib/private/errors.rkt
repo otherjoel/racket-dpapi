@@ -33,7 +33,8 @@
    #x80090003 "NTE_BAD_KEY: Bad key (wrong entropy or protection scope)"
    #x80090005 "NTE_BAD_DATA: Bad data (invalid encrypted data format)"
    #x80090008 "NTE_BAD_ALGID: Invalid algorithm specified"
-   #x8009000D "NTE_BAD_FLAGS: Invalid flags specified"
+   #x80090009 "NTE_BAD_FLAGS: Invalid flags specified"
+   #x8009000D "NTE_NO_KEY: Key does not exist"
    #x80090016 "NTE_BAD_KEYSET: Keyset does not exist"
    #x80090020 "NTE_FAIL: Internal error occurred"))
 
