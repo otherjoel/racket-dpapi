@@ -117,6 +117,9 @@
 ;; DPAPI-Dependent Error Condition Tests (require Windows)
 ;; =============================================================================
 
+(unless (dpapi-available?)
+  (eprintf "errors-tests.rkt: DPAPI-dependent tests skipped, DPAPI not available on this platform\n"))
+
 (when (dpapi-available?)
   (test-case "import with wrong entropy raises exn:fail:dpapi"
     (define pv (make-protected-value #"secret data for entropy test"))

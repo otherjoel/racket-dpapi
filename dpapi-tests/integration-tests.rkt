@@ -7,6 +7,9 @@
 ;; Integration Tests (require Windows)
 ;; =============================================================================
 
+(unless (dpapi-available?)
+  (eprintf "integration-tests.rkt: skipped, DPAPI not available on this platform\n"))
+
 (when (dpapi-available?)
 
   ;; ---------------------------------------------------------------------------
@@ -51,12 +54,16 @@
   ;; Empty Bytes
   ;; ---------------------------------------------------------------------------
 
-  (test-case "empty bytes raises error"
-    ;; CryptProtectData rejects zero-length input
-    (define pv (make-protected-value #"placeholder"))
-    ;; We can't directly test empty bytes through the new API since
-    ;; make-protected-value would need to handle it. Test that exporting
-    ;; works and importing garbage fails.
+  (test-case "empty bytes round-trip"
+    (define pv (make-protected-value #""))
+    (check-equal? (with-decrypted-data pv (lambda (d) (bytes-copy d))) #"")
+    (define exported (export-protected-bytes pv))
+    (define pv2 (import-protected-bytes exported))
+    (check-equal? (with-decrypted-data pv2 (lambda (d) (bytes-copy d))) #"")
+    (destroy-protected-value! pv)
+    (destroy-protected-value! pv2))
+
+  (test-case "importing empty bytes raises exn:fail:dpapi"
     (check-exn exn:fail:dpapi?
       (lambda () (import-protected-bytes #""))))
 

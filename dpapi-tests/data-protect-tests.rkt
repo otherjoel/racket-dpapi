@@ -22,6 +22,9 @@
 ;; Export/Import Round-Trip Tests (require Windows)
 ;; =============================================================================
 
+(unless (dpapi-available?)
+  (eprintf "data-protect-tests.rkt: DPAPI-dependent tests skipped, DPAPI not available on this platform\n"))
+
 (when (dpapi-available?)
   (test-case "basic round-trip export/import"
     (define pv (make-protected-value #"Hello, DPAPI!"))

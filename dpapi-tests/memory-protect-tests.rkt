@@ -8,6 +8,9 @@
 ;; Memory Protection Tests (require Windows)
 ;; =============================================================================
 
+(unless (dpapi-available?)
+  (eprintf "memory-protect-tests.rkt: skipped, DPAPI not available on this platform\n"))
+
 (when (dpapi-available?)
 
   ;; ---------------------------------------------------------------------------

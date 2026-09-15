@@ -3,6 +3,7 @@
 .\#*
 .DS_Store
 .*/
+!.github/
 *.swp
 *.md
 !README.md

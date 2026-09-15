@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Test on Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: Bogdanp/setup-racket@v1.14
+        with:
+          architecture: x64
+          distribution: full
+          variant: CS
+          version: stable
+
+      - name: Install packages
+        run: raco pkg install --auto --batch --link dpapi-lib/ dpapi/ dpapi-tests/
+
+      - name: Run tests
+        run: raco test dpapi-tests
