@@ -4,7 +4,6 @@
 
 (require "memory-protect.rkt"
          "utils.rkt"
-         "errors.rkt"
          "data-protect.rkt")
 
 (provide make-protected-value
@@ -49,7 +48,7 @@
       (define encrypted (unbox data-box))
 
       (unless encrypted
-        (raise-dpapi-error 13 "with-decrypted-data: protected value has been destroyed"))
+        (error 'with-decrypted-data "protected value has been destroyed"))
 
       ;; Decrypt in-place
       (unprotect-memory! encrypted #:scope scope)

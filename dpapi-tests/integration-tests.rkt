@@ -150,7 +150,7 @@
   (test-case "protected-value access after destroy raises error"
     (define pv (make-protected-value #"sensitive"))
     (destroy-protected-value! pv)
-    (check-exn exn:fail:dpapi?
+    (check-exn exn:fail?
       (lambda () (with-decrypted-data pv (lambda (d) d)))))
 
   ;; ---------------------------------------------------------------------------

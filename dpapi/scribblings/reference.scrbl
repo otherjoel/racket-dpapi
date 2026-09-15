@@ -69,7 +69,8 @@ data, then automatically re-encrypts before returning.
 The data is only exposed during the dynamic extent of the callback. The protected value is always
 re-encrypted, even if @racket[proc] throws an exception.
 
-This is the only way to access the data inside a @tech{protected value}.
+This is the only way to access the data inside a @tech{protected value}. Raises @racket[exn:fail]
+if @racket[pv] has been destroyed with @racket[destroy-protected-value!].
 
 Example:
 
@@ -82,7 +83,7 @@ Example:
 
 @defproc[(destroy-protected-value! [pv protected-value?]) void?]{
 Zeros out the encrypted data and marks the protected value as destroyed. Any subsequent
-call to @racket[with-decrypted-data] on this value will raise @racket[exn:fail:dpapi].
+call to @racket[with-decrypted-data] on this value will raise @racket[exn:fail].
 
 This is a best-effort attempt to remove sensitive data from memory. Racket's garbage
 collector may have already copied the data elsewhere.
@@ -124,8 +125,8 @@ internally.
 
 Exports the contents of @racket[pv] as DPAPI-encrypted bytes suitable for persistent storage (files,
 databases, etc.). The returned bytes are encrypted using Windows credentials and can be imported
-back with @racket[import-protected-bytes]. Raises @racket[exn:fail:dpapi] if DPAPI is not available,
-if the protected value has been destroyed, or if encryption fails.
+back with @racket[import-protected-bytes]. Raises @racket[exn:fail:dpapi] if encryption fails, and
+@racket[exn:fail] if DPAPI is not available or the protected value has been destroyed.
 
 If @racket[description] is not provided, the description from @racket[pv] (see
 @racket[protected-value-description]) is used. If explicitly provided, it overrides the
@@ -200,7 +201,9 @@ value (see @racket[make-protected-value]).
              [error-code exact-nonnegative-integer?]
              [error-message string?])
             #:transparent]{
-Exception structure for DPAPI errors. Extends @racket[exn:fail].
+Exception structure for DPAPI errors. Extends @racket[exn:fail]. This exception is raised only
+when a Windows DPAPI call reports failure; local validation failures (DPAPI not available,
+destroyed @tech{protected value}, malformed data) raise a plain @racket[exn:fail] instead.
 
 @itemlist[
   @item{@racket[error-code]: Windows error code from @tt{GetLastError}}

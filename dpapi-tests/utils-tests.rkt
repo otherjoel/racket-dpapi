@@ -1,8 +1,7 @@
 #lang racket/base
 
 (require rackunit
-         dpapi/private/utils
-         dpapi/private/errors)
+         dpapi/private/utils)
 
 ;; =============================================================================
 ;; Padding Tests
@@ -90,33 +89,33 @@
     (check-equal? (bytes-ref result i) #x42)))
 
 (test-case "unpad rejects non-block-aligned data"
-  (check-exn exn:fail:dpapi?
+  (check-exn exn:fail?
     (lambda () (unpad-from-block-size (make-bytes 17 1)))))
 
 (test-case "unpad rejects empty data"
-  (check-exn exn:fail:dpapi?
+  (check-exn exn:fail?
     (lambda () (unpad-from-block-size #""))))
 
 (test-case "unpad rejects zero padding value"
   (define bad (make-bytes 16 0))
-  (check-exn exn:fail:dpapi?
+  (check-exn exn:fail?
     (lambda () (unpad-from-block-size bad))))
 
 (test-case "unpad rejects padding value exceeding block size"
   (define bad (bytes-append (make-bytes 15 0) (bytes 17)))
-  (check-exn exn:fail:dpapi?
+  (check-exn exn:fail?
     (lambda () (unpad-from-block-size bad))))
 
 (test-case "unpad rejects inconsistent padding bytes"
   ;; Last byte says 3 bytes of padding, but not all 3 match
   (define bad (bytes-append (make-bytes 13 #xAA) #"\x01\x03\x03"))
-  (check-exn exn:fail:dpapi?
+  (check-exn exn:fail?
     (lambda () (unpad-from-block-size bad))))
 
 (test-case "unpad rejects partially inconsistent padding"
   ;; Last 4 bytes should all be 4, but one is wrong
   (define bad (bytes-append (make-bytes 12 #xBB) #"\x04\x04\x05\x04"))
-  (check-exn exn:fail:dpapi?
+  (check-exn exn:fail?
     (lambda () (unpad-from-block-size bad))))
 
 ;; =============================================================================

@@ -96,7 +96,7 @@
   (test-case "protected-value destruction prevents further access"
     (define pv (make-protected-value #"to be destroyed"))
     (destroy-protected-value! pv)
-    (check-exn exn:fail:dpapi?
+    (check-exn exn:fail?
       (lambda () (with-decrypted-data pv (lambda (d) d)))))
 
   (test-case "protected-value re-encrypts after exception in callback"
