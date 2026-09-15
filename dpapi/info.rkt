@@ -2,8 +2,7 @@
 (define collection "dpapi")
 (define deps '("base" "dpapi-lib"))
 (define implies '("dpapi-lib"))
-(define build-deps '("dpapi-lib"
-                     "scribble-lib" "racket-doc" "rackunit-lib"))
+(define build-deps '("scribble-lib" "racket-doc"))
 (define scribblings '(("scribblings/dpapi.scrbl" (multi-page))))
 (define pkg-desc "Documentation for DPAPI")
 (define version "1.0")
