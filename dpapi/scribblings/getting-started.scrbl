@@ -43,7 +43,7 @@ The only way to access the plaintext is through a callback inside @racket[with-d
 (unless (dpapi-available?)
   (error "DPAPI not available on this platform"))
 
-(code:comment2 "Create a protected value - data is encrypted immediately")
+(code:comment2 "Create a protected value - an encrypted copy of the data")
 (define password
   (make-protected-value (string->bytes/utf-8 "my-secret-password")))
 
@@ -61,6 +61,11 @@ The only way to access the plaintext is through a callback inside @racket[with-d
 The @racket[with-decrypted-data] pattern ensures that data remains unencrypted only during the time
 it is needed. The data gets re-encrypted automatically once the callback is complete, even if the
 callback throws an exception.
+
+Note that @racket[make-protected-value] encrypts a @emph{copy} of the bytes you pass in. The
+original byte string is left untouched, so in the example above the plaintext password also
+remains in memory until it is garbage collected. See @secref["security-best-practices"] for how to
+zero it yourself.
 
 @section{Saving and Loading Encrypted Data}
 

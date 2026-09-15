@@ -49,6 +49,10 @@ The @racket[description] is an optional label stored in the @tech{protected valu
 as the default description when exporting with @racket[export-protected-bytes], and can be
 retrieved with @racket[protected-value-description].
 
+The contents of @racket[data] are copied into the @tech{protected value}; the original byte string
+is neither modified nor zeroed, since it may be immutable. See @secref["security-best-practices"]
+for how to handle the original.
+
 Example:
 
 @racketblock[
@@ -129,7 +133,7 @@ internally. The plaintext is never exposed to calling code---it is decrypted and
 internally.
 
 @defproc[(export-protected-bytes [pv protected-value?]
-                                  [#:description description (or/c string? #f) #f]
+                                  [#:description description (or/c string? #f) (protected-value-description pv)]
                                   [#:entropy entropy (or/c bytes? #f) #f]
                                   [#:machine-scope? machine-scope? boolean? #f]
                                   [#:audit? audit? boolean? #f])

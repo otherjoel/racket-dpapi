@@ -65,6 +65,19 @@ be kept well away. }
 @item{Avoid binding decrypted data to any variables in general, and never bind decrypted data to
   variables that persist outside the scope of the place where it is actually needed.}
 
+@item{@racket[make-protected-value] copies its input and cannot zero the original, which may be
+  immutable. When you create a secret yourself, build it in a mutable byte string and zero it with
+  @racket[bytes-fill!] as soon as the @tech{protected value} exists:
+
+  @racketblock[
+  (define secret (string->bytes/utf-8 (read-line)))
+  (define pv (make-protected-value secret))
+  (bytes-fill! secret 0)
+  ]
+
+  This does not remove every trace (the string returned by @racket[read-line] above is still in
+  memory, for instance), but it removes the copy you control.}
+
 @item{Although in-memory protection has hard limits (see above), it is still good practice to
 encrypt data early and decrypt it late. This reduces the window during which plaintext
 is present in memory, and---more importantly---reduces the chance of accidentally passing
