@@ -13,11 +13,6 @@
  On Windows Vista or later, this returns @racket[#t]. On all other platforms (Linux, macOS, etc.),
  it returns @racket[#f].
 
- @racketblock[
- (if (dpapi-available?)
-     (displayln "DPAPI is available")
-     (displayln "DPAPI is not available"))
- ]
 }
 
 @section[#:tag "ref-protected-values"]{Protected Values}
@@ -50,7 +45,7 @@ as the default description when exporting with @racket[export-protected-bytes], 
 retrieved with @racket[protected-value-description].
 
 The contents of @racket[data] are copied into the @tech{protected value}; the original byte string
-is neither modified nor zeroed, since it may be immutable. See @secref["security-best-practices"]
+is neither modified nor zeroed, since it may be immutable. See @secref["practical-guidance"]
 for how to handle the original.
 
 Example:

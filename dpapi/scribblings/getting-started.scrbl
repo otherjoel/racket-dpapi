@@ -73,7 +73,7 @@ later attempt to use the value raises an error:
 
 Note that @racket[make-protected-value] encrypts a @emph{copy} of the bytes you pass in. The
 original byte string is left untouched, so in the example above the plaintext password also
-remains in memory until it is garbage collected. See @secref["security-best-practices"] for how to
+remains in memory until it is garbage collected. See @secref["practical-guidance"] for how to
 zero it yourself.
 
 @section{Saving and Loading Encrypted Data}

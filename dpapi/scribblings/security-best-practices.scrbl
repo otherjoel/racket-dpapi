@@ -48,7 +48,7 @@ rely on careful coding patterns to prevent in-memory exposure---instead, underst
 decrypted data @emph{will} be visible in memory while your program runs, and evaluate whether
 that is acceptable for your threat model.
 
-@section{Practical Guidance}
+@section[#:tag "practical-guidance"]{Practical Guidance}
 
 The risks that matter most in practice are the ones that turn temporary in-memory exposure
 into @bold{persistent, recoverable leaks}---places where secrets end up written to disk or
