@@ -5,6 +5,6 @@
 (define build-deps '("scribble-lib" "racket-doc"))
 (define scribblings '(("scribblings/dpapi.scrbl" (multi-page))))
 (define pkg-desc "Documentation for DPAPI")
-(define version "1.0")
+(define version "1.1")
 (define pkg-authors '("Joel Dueck"))
 (define license 'LicenseRef-CreatorCxn-1.0)
