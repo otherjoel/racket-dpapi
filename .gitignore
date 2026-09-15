@@ -1,0 +1,17 @@
+*~
+\#*
+.\#*
+.DS_Store
+.*/
+*.swp
+*.md
+!README.md
+!LICENSE.md
+compiled/
+doc/
+*.html
+*.js
+*.css
+old/
+!doc-util.css
+*.bak
