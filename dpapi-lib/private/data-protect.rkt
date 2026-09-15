@@ -27,13 +27,23 @@
 ;; =============================================================================
 
 (define (bytes->data-blob data)
-  ;; Convert Racket bytes to DATA_BLOB pointer
+  ;; Convert Racket bytes to DATA_BLOB pointer.
+  ;; The buffer is allocated 'raw (outside the GC) on purpose: the DATA_BLOB
+  ;; struct is 'atomic, so the GC would not see its pbData field and could
+  ;; reclaim a GC-managed buffer before the foreign call. Callers must
+  ;; release the blob with release-data-blob! once the call has returned.
   (if (not data)
       #f
       (let* ([len (bytes-length data)]
-             [data-ptr (malloc len 'atomic-interior)])
+             [data-ptr (malloc (max len 1) 'raw)])
         (memcpy data-ptr data len _byte)
         (make-DATA_BLOB len data-ptr))))
+
+(define (release-data-blob! blob)
+  ;; Zero and free a buffer created by bytes->data-blob
+  (when (and blob (DATA_BLOB-pbData blob))
+    (memset (DATA_BLOB-pbData blob) 0 (DATA_BLOB-cbData blob) _byte)
+    (free (DATA_BLOB-pbData blob))))
 
 (define (data-blob->bytes blob)
   ;; Extract bytes from DATA_BLOB and copy to Racket bytes
@@ -90,9 +100,9 @@
                       flags
                       out-blob))
 
-  ;; Zero sensitive inputs regardless of success/failure
-  (zero-data-blob! data-blob)
-  (when entropy-blob (zero-data-blob! entropy-blob))
+  ;; Zero and free sensitive inputs regardless of success/failure
+  (release-data-blob! data-blob)
+  (release-data-blob! entropy-blob)
 
   ;; Check result and handle errors
   (if (zero? result)
@@ -131,8 +141,9 @@
                         flags
                         out-blob))
 
-  ;; Zero entropy regardless of success/failure
-  (when entropy-blob (zero-data-blob! entropy-blob))
+  ;; Zero and free inputs regardless of success/failure
+  (release-data-blob! data-blob)
+  (release-data-blob! entropy-blob)
 
   ;; Check result
   (when (zero? result)
