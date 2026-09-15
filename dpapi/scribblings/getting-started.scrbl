@@ -11,16 +11,11 @@ This guide walks through common usage patterns for the DPAPI library.
 
 @section{Installation}
 
-Until Racket is updated to support SHA256 commits, you will need to clone the source code and then
-install locally with:
+Install from the Racket package catalog:
 
 @terminal{
- @:>{git clone https://codeberg.org/joeld/racket-dpapi.git}
- @:>{cd racket-dpapi}
- @:>{raco pkg install dpapi/ dpapi-lib/}
+ @:>{raco pkg install dpapi}
 }
-
-Omit @tt{dpapi/} to exclude building the local documentation.
 
 Then require it in your Racket programs:
 

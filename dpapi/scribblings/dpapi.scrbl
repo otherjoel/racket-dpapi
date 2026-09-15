@@ -23,7 +23,7 @@ Windows 11 / x86_64. Source is available
 
 @inline-note{If you use this library in your software, @hyperlink["mailto:joel@jdueck.net"]{email
 me} to introduce yourself. This is the sole condition of the project's
-@hyperlink["https://codeberg.org/joeld/racket-dpapi/src/branch/main/LICENSE.md"]{permissive
+@hyperlink["https://github.com/otherjoel/racket-dpapi/blob/main/LICENSE.md"]{permissive
 license.} (See @hyperlink["https://joeldueck.com/how-i-license.html"]{How I License} for
 background.)}
 
