@@ -90,8 +90,7 @@
     (define pv2 (import-protected-bytes exported))
     (define result (with-decrypted-data pv2 (lambda (d) (bytes-copy d))))
     (check-equal? result #"no desc")
-    (define desc (protected-value-description pv2))
-    (check-true (or (not desc) (equal? desc "")))
+    (check-false (protected-value-description pv2))
     (destroy-protected-value! pv)
     (destroy-protected-value! pv2))
 

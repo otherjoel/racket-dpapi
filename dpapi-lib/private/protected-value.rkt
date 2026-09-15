@@ -110,6 +110,9 @@
                 (unprotect-data encrypted-data
                                 #:entropy entropy
                                 #:return-description? #t)])
+    ;; CryptUnprotectData reports a NULL description as an empty string
     (begin0
-      (make-protected-value decrypted #:scope scope #:description desc)
+      (make-protected-value decrypted
+                            #:scope scope
+                            #:description (and desc (not (equal? desc "")) desc))
       (zero-bytes! decrypted))))
