@@ -72,6 +72,18 @@ re-encrypted, even if @racket[proc] throws an exception.
 This is the only way to access the data inside a @tech{protected value}. Raises @racket[exn:fail]
 if @racket[pv] has been destroyed with @racket[destroy-protected-value!].
 
+Access to a @tech{protected value} is exclusive and not re-entrant. While @racket[proc] is running,
+other threads that call @racket[with-decrypted-data], @racket[export-protected-bytes], or
+@racket[destroy-protected-value!] on the same value block until @racket[proc] returns. Calling any of
+those on the same value from within @racket[proc] on the same thread raises @racket[exn:fail]
+rather than deadlocking.
+
+If the thread running @racket[proc] is terminated with @racket[kill-thread], the cleanup that
+re-encrypts and zeros the data does not run. The plaintext remains in memory, and the value stays
+locked, so any later call on it blocks indefinitely (a blocked caller can still be interrupted with
+@racket[break-thread]). Use @racket[break-thread] rather than @racket[kill-thread] to interrupt a
+callback; breaks unwind normally and the value is re-encrypted.
+
 Example:
 
 @racketblock[

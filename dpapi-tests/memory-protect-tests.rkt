@@ -110,6 +110,35 @@
     (check-equal? result #"exception test")
     (destroy-protected-value! pv))
 
+  (test-case "nested with-decrypted-data on the same value raises instead of deadlocking"
+    (define pv (make-protected-value #"nested test"))
+    (check-exn #rx"nested call"
+      (lambda ()
+        (with-decrypted-data pv
+          (lambda (outer)
+            (with-decrypted-data pv (lambda (inner) inner))))))
+    (check-exn #rx"nested call"
+      (lambda ()
+        (with-decrypted-data pv
+          (lambda (outer) (destroy-protected-value! pv)))))
+    ;; Value is re-encrypted and usable after the failed nested calls
+    (define result
+      (with-decrypted-data pv (lambda (data) (bytes-copy data))))
+    (check-equal? result #"nested test")
+    (destroy-protected-value! pv))
+
+  (test-case "nested access to a different value is allowed"
+    (define pv1 (make-protected-value #"first"))
+    (define pv2 (make-protected-value #"second"))
+    (define result
+      (with-decrypted-data pv1
+        (lambda (d1)
+          (with-decrypted-data pv2
+            (lambda (d2) (bytes-append d1 d2))))))
+    (check-equal? result #"firstsecond")
+    (destroy-protected-value! pv1)
+    (destroy-protected-value! pv2))
+
   (test-case "protected-value with cross-process scope"
     (define pv (make-protected-value #"cross-proc" #:scope 'cross-process))
     (define result

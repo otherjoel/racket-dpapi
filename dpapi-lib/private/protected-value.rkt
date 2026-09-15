@@ -20,7 +20,7 @@
 
 ;; Protected values are always encrypted in memory except during callback execution
 ;; The struct is opaque because we don't export the accessors
-(struct protected-value (box scope sema description))
+(struct protected-value (box scope sema owner description))
 
 ;; =============================================================================
 ;; Construction
@@ -31,7 +31,27 @@
                                #:description [description #f])
   (define padded (pad-to-block-size data))
   (protect-memory! padded #:scope scope)
-  (protected-value (box padded) scope (make-semaphore 1) description))
+  (protected-value (box padded) scope (make-semaphore 1) (box #f) description))
+
+;; =============================================================================
+;; Exclusive Access
+;; =============================================================================
+
+(define (call-with-exclusive-access who pv thunk)
+  ;; Serialize access to pv. The semaphore is not recursive, so a nested call
+  ;; from the thread that already holds it would block forever; detect that
+  ;; case and raise instead. Only the owning thread ever matches its own
+  ;; identity here, so the check is safe outside the semaphore.
+  (define owner (protected-value-owner pv))
+  (when (eq? (unbox owner) (current-thread))
+    (error who "protected value is already in use by this thread (nested call)"))
+  (call-with-semaphore/enable-break (protected-value-sema pv)
+    (lambda ()
+      (set-box! owner (current-thread))
+      (dynamic-wind
+        void
+        thunk
+        (lambda () (set-box! owner #f))))))
 
 ;; =============================================================================
 ;; Controlled Access
@@ -41,7 +61,7 @@
   ;; Temporarily decrypt the protected value, call proc with the decrypted data,
   ;; then automatically re-encrypt before returning.
   ;; The data is only exposed during the dynamic extent of the callback.
-  (call-with-semaphore (protected-value-sema pv)
+  (call-with-exclusive-access 'with-decrypted-data pv
     (lambda ()
       (define data-box (protected-value-box pv))
       (define scope (protected-value-scope pv))
@@ -73,7 +93,7 @@
   ;; Zero out the protected memory before allowing it to be garbage collected.
   ;; This is a best-effort attempt to remove sensitive data from memory.
   ;; Note: Racket's GC may have already copied the data elsewhere.
-  (call-with-semaphore (protected-value-sema pv)
+  (call-with-exclusive-access 'destroy-protected-value! pv
     (lambda ()
       (define data-box (protected-value-box pv))
       (define encrypted (unbox data-box))
