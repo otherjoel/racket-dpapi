@@ -44,11 +44,8 @@
 (define _BOOL _int32)
 (define _PVOID _pointer)
 
-;; Wide string pointer (UTF-16) - can be NULL
-(define _LPCWSTR (_or-null _pointer))
-
-;; Output wide string pointer (nullable for optional use)
-(define _LPWSTR* (_or-null (_ptr o _pointer)))
+(define _LPCWSTR _pointer)
+(define _LPWSTR* _pointer)
 
 ;; DATA_BLOB structure
 ;; typedef struct _DATA_BLOB {
